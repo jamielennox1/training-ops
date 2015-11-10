@@ -9,7 +9,7 @@ variable "atlas_user_token" {
 	default = "nIisyodw1SNrlA.atlasv1.T6Jq5gMz6kQnOeLrm9uenPiawIzEHC1jD9x09eoOWNfftZpyM2QIqGIYglZbMGK6CVY"
 }
 variable "atlas_environment" {
-	default = "training-ops"
+	default = "trainings-ops"
 }
 variable "consul_server_count" {
 	default = 3
