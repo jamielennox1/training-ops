@@ -37,10 +37,27 @@ class letschat::app (
     require  => Class['nodejs'],
   }
 
+  package { 'dnsmasq':
+    ensure  => present,
+    require => Vcsrepo[$deploy_dir],
+  }
+
+  file { '/etc/dnsmasq.d/10-consul':
+    ensure  => present,
+    content => 'server=/consul/127.0.0.1#8600',
+    notify  => Service['dnsmasq'],
+    require => Package['dnsmasq'],
+  }
+
+  service { 'dnsmasq':
+    ensure  => running,
+    require => File['/etc/dnsmasq.d/10-consul'],
+  }
+
   file { "${deploy_dir}/settings.yml":
     ensure  => present,
     content => template('letschat/settings.yml.erb'),
-    require => Vcsrepo[$deploy_dir],
+    require => Service['dnsmasq'],
   }
 
   nodejs::npm { 'install letschat':
@@ -49,12 +66,6 @@ class letschat::app (
     install_options => ['--user=root'],
     target          => $deploy_dir,
     require         => File["${deploy_dir}/settings.yml"],
-    notify          => Exec['npm run migrate'],
-  }
-  exec { 'npm run migrate':
-    refreshonly => true,
-    cwd         => $deploy_dir,
-    path        => ['/usr/bin','/bin'],
   }
 
   file { '/etc/init.d/letschat':

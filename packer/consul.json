@@ -2,7 +2,7 @@
     "variables": {
         "aws_access_key": "{{env `aws_access_key`}}",
         "aws_secret_key": "{{env `aws_secret_key`}}",
-        "atlas_username": "jamielennox1"
+        "atlas_username": "ATLAS_ACCOUNT_NAME"
     },
     "builders": [{
         "type": "amazon-ebs",
@@ -12,41 +12,32 @@
         "source_ami": "ami-cf5beba4",
         "instance_type": "t2.micro",
         "ssh_username": "ubuntu",
-        "ami_name": "mongodb {{timestamp}}"
+        "ami_name": "consul {{timestamp}}"
     }],
     "push": {
-      "name": "jamielennox1/mongodb",
+      "name": "{{user `atlas_username`}}/consul",
       "vcs": false
     },
     "provisioners": [
-    {
-        "type": "shell",
-        "script": "scripts/mongodb.sh"
-    },
     {
         "type": "shell",
         "script": "scripts/consul.sh"
     },
     {
         "type": "file",
-        "source": "files/mongodb.json",
-        "destination": "/etc/consul.d/mongodb.json"
+        "source": "files/consul.json",
+        "destination": "/etc/consul.d/consul.json"
     },
     {
         "type": "file",
-        "source": "files/consul_client.conf",
+        "source": "files/consul_server.conf",
         "destination": "/etc/init/consul.conf"
-    },
-    {
-        "type": "puppet-masterless",
-        "manifest_file": "puppet/manifests/mongodb.pp",
-        "module_paths": ["puppet/modules/"]
     }
-    ],
+    ],  
     "post-processors": [
       {
         "type": "atlas",
-        "artifact": "jamielennox1/mongodb",
+        "artifact": "{{user `atlas_username`}}/consul",
         "artifact_type": "aws.ami",
         "metadata": {
           "created_at": "{{timestamp}}"

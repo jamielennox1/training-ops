@@ -22,6 +22,25 @@
     {
         "type": "shell",
         "script": "scripts/nodejs.sh"
+    },
+    {
+        "type": "shell",
+        "script": "scripts/consul.sh"
+    },
+    {
+        "type": "file",
+        "source": "files/nodejs.json",
+        "destination": "/etc/consul.d/nodejs.json"
+    },
+    {
+        "type": "file",
+        "source": "files/consul_client.conf",
+        "destination": "/etc/init/consul.conf"
+    },
+    {
+        "type": "puppet-masterless",
+        "manifest_file": "puppet/manifests/nodejs.pp",
+        "module_paths": ["puppet/modules/"]
     }
     ],
     "post-processors": [
